@@ -49,6 +49,7 @@ RUN apt-get install git \
                     pkg-config \
                     libssl-dev \
                     libfreetype6-dev \
+                    wiringpi \
                     binutils
 
 #install required python software
@@ -63,7 +64,7 @@ COPY "./hardware_layers/*" "./OpenPLC_v3/webserver/core/hardware_layers/"
 
 #compile and install OpenPLC
 RUN cd OpenPLC_v3 \
-    && ./install.sh rpi
+    && ./install.sh docker
 
 #SSH port 22,  default OpenPLC port 8080 and Modbus TCP 502
 EXPOSE 22 8080 502
