@@ -2,7 +2,7 @@
 #
 # use armv5e  for Raspberry 1, Zero, Zero W
 # use armv7hf for Raspberry 2,3,4
-FROM balenalib/raspberry-pi-debian:stretch
+FROM balenalib/raspberry-pi-debian:buster
 
 #enable building ARM container on x86 machinery on the web (comment out next line if built on Raspberry)
 RUN [ "cross-build-start" ]
