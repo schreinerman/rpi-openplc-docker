@@ -55,9 +55,20 @@ RUN python -m pip install --upgrade pip \
 #clone OpenPLC source from git repo
 RUN git clone https://github.com/thiagoralves/OpenPLC_v3.git
 
+#clone netPI patch
+RUN git clone https://github.com/schreinerman/openplc_v3-netpi.git
+
+#copy hardware layers
+RUN cp ./openplc_v3-netpi/hardware_layers/* ./OpenPLC_v3/webserver/core/hardware_layers/
+
 #copy customized hardware layers
 COPY "./hardware_layers/*" "./OpenPLC_v3/webserver/core/hardware_layers/"
 
+#compile and install OpenPLC
+RUN cp ./openplc_v3-netpi/netpi.patch ./OpenPLC_v3/ \
+    && cd OpenPLC_v3 \
+    && patch -p1 -i netpi.patch
+    
 #compile and install OpenPLC
 RUN cd OpenPLC_v3 \
     && ./install.sh rpi
