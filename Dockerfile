@@ -45,6 +45,7 @@ RUN apt-get install git \
                     python-pip \
                     wget \
                     libtool \
+                    wiringpi \
                     pkg-config \
                     binutils
 
@@ -71,7 +72,7 @@ RUN cp ./openplc_v3-netpi/netpi.patch ./OpenPLC_v3/ \
     
 #compile and install OpenPLC
 RUN cd OpenPLC_v3 \
-    && ./install.sh rpi
+    && ./install.sh docker
 
 #SSH port 22,  default OpenPLC port 8080 and Modbus TCP 502
 EXPOSE 22 8080 502
