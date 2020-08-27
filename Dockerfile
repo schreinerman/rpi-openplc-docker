@@ -34,6 +34,7 @@ RUN apt-get update  \
 
 #install required packages and tools
 RUN apt-get install git \
+                    make \
                     autotools-dev \
                     autoconf \
                     automake \
@@ -46,6 +47,8 @@ RUN apt-get install git \
                     wget \
                     libtool \
                     pkg-config \
+                    libssl-dev \
+                    libfreetype6-dev \
                     binutils
 
 #install required python software
