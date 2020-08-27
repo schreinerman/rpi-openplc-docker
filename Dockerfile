@@ -1,19 +1,31 @@
-#use latest armv7hf compatible debian version from group resin.io as base image
+#use latest compatible debian version from group resin.io as base image
 #
-# use armv5e  for Raspberry 1, Zero, Zero W
-# use armv7hf for Raspberry 2,3,4
-FROM balenalib/armv7hf-debian:stretch
+# use balenalib/raspberry-pi-debian:buster  for Raspberry 1, Zero, Zero W
+# use balenalib/armv7hf-debian:buster for Raspberry 2,3,4
+FROM balenalib/armv7hf-debian:buster
 
-#enable building ARM container on x86 machinery on the web (comment out next line if built on Raspberry)
-RUN [ "cross-build-start" ]
+#dynamic build arguments coming from the /hooks/build file
+ARG BUILD_DATE
+ARG VCS_REF
+
+#metadata labels
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-url="https://github.com/schreinerman/rpi-openplc-docker" \
+      org.label-schema.vcs-ref=$VCS_REF
+
+#version
+ENV IOEXPERT_NETPI_OPENPLC_VERSION 1.3.0
+
+#labeling
+LABEL maintainer="info@io-expert.com" \
+      version=$IOEXPERT_NETPI_OPENPLC_VERSION \
+      description="OpenPLC V3"
+
 
 #labeling
 LABEL maintainer="info@io-expert.com" \
       version="V1.0.0" \
       description="Open-PLC - IEC 61131-3 compatible open source PLC"
-
-#version
-ENV IOEXPERT_OPENPLC 1.0.0
 
 #copy init.d files
 COPY "./init.d/*" /etc/init.d/
@@ -34,6 +46,7 @@ RUN apt-get update  \
 
 #install required packages and tools
 RUN apt-get install git \
+                    make \
                     autotools-dev \
                     autoconf \
                     automake \
@@ -45,8 +58,10 @@ RUN apt-get install git \
                     python-pip \
                     wget \
                     libtool \
-                    wiringpi \
                     pkg-config \
+                    libssl-dev \
+                    libfreetype6-dev \
+                    wiringpi \
                     binutils
 
 #install required python software
@@ -74,6 +89,13 @@ RUN cp ./openplc_v3-netpi/netpi.patch ./OpenPLC_v3/ \
 RUN cd OpenPLC_v3 \
     && ./install.sh docker
 
+#clean-up
+RUN rm -rf /tmp/* \
+ && apt remove git \
+ && apt autoremove \
+ && apt upgrade \
+ && rm -rf /var/lib/apt/lists/*
+
 #SSH port 22,  default OpenPLC port 8080 and Modbus TCP 502
 EXPOSE 22 8080 502
 
@@ -82,6 +104,3 @@ ENTRYPOINT ["/etc/init.d/entrypoint.sh"]
 
 #set STOPSGINAL
 STOPSIGNAL SIGTERM
-
-#stop processing ARM emulation (comment out next line if built on Raspberry)
-RUN [ "cross-build-end" ]
